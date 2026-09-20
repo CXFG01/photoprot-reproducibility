@@ -1,9 +1,9 @@
 {
   ".gitattributes": "d8ff0fab1a5e9659b5f610fb03e9ac6945d24d989f3c8749bab959f46b5bb9c8",
-  ".gitignore": "85bbb1a0f392c7bd96ec1f56ab7370979b60998b08c844408b8e0ef974ae59cb",
+  ".gitignore": "3d2077d9d8456f0508f24875bcc2c1f49e026c5c7790b9e3395a3509a4524119",
   "LICENSE": "01c9646d4c73c80da2c0e92ece5da456c31dfc6207d7857337c486edd6cedfa4",
   "NOTICE.md": "5cb4aff392343f6556284bc4b4a1cbf84bd4b33aff84437592f78acfb540c98b",
-  "README.md": "42edacac78f98cd8584c72d879b04019ed89e9308f17148ec5e4bd1d1755229a",
+  "README.md": "3d8dd8eb4d3463765859346352e717fb7f642692614ab1b26ccb35faf89b1089",
   "artifacts/index.json": "1f02b43040ee649e839c48b90424da3d837d10a2d1d7d695799be578cef834eb",
   "artifacts/manifest.json": "178708b9850c27477ea6c7a4b93ac762e70f35b9679171ffca9f5caeb692f8fc",
   "bench/10_splits.py": "f26be1dc9b68514f8518b18abcebc7529e490754004d5ae3ec2c5d2668b86e9c",
@@ -93,5 +93,9 @@
   "webapp/requirements.txt": "5431b2c1d054d35fd4e61bca965c0869b3b3d079e65c27517ab730678993b129",
   "webapp/server.py": "62a40c8d8305746d5cec0acfc50073160be65a628261b8ab9182f5d825e3adbe",
   "webapp/test_protection.py": "00cabfa42255a4f64f065b1c212acf04d0186b333667cbb6690c31b4ae73826e",
-  "webapp/test_server_safety.py": "232e743d375333378e19ccb11466ecb24fdd6a61be2d560e26f89141031d8fff"
+  "webapp/test_server_safety.py": "232e743d375333378e19ccb11466ecb24fdd6a61be2d560e26f89141031d8fff",
+  ".gitleaks.toml": "1e5c634a14262d6d2e64e5a660e5cb64ea35d3226010b8dde2cfc4a7cd964e2b",
+  "SECURITY.md": "8211215a22ba491bdb1ac4de42be43e75c4a6c3b514bab51742aad1042be90a4",
+  ".github/workflows/secret-scan.yml": "0d809773aa7376a189c9090b7595d4d05abc2263907ff68a804e02157d38e819",
+  ".github/FUNDING.yml": "f71c9cba216979d5c7a8c7a9a3251659046b1101d5e92737e6663cd61b25a85e"
 }

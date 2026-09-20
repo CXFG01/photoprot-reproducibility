@@ -1,5 +1,9 @@
 # PhotoProt: reproducibility and Wild-v1
 
+> **Hackathon prototype.** PhotoProt was built for a hackathon. It is experimental and not yet polished or production-ready. Expect rough edges, incomplete coverage and incorrect matches; verify results against the original PDB entry.
+
+[**Donate / support continued development →**](https://photoprot.uk/support.html) · Donations are not enabled yet. The support page will provide the payment link once it is activated.
+
 Search deposited protein structures using a single cartoon/ribbon image. This repository provides the frozen DINOv2-L retrieval checkpoint, the actual production index, rendering/training/evaluation source, and the real-world figure benchmark. The [Codex plugin](https://github.com/CXFG01/photoprot-codex) is distributed separately.
 
 The public demo is [photoprot.uk](https://photoprot.uk). Current deployment limits,
