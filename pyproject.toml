@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "photoprot"
+version = "0.1.0"
+description = "Predicting protein structure class and identity from 2D rendered images"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy",
+    "pandas",
+    "pyarrow",
+    "requests",
+    "tqdm",
+    "gemmi",
+    "pydssp",
+    "einops",
+    "scikit-learn",
+    "lightgbm",
+]
+
+[tool.setuptools.packages.find]
+include = ["photoprot*"]

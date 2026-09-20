@@ -1,0 +1,480 @@
+{
+  "created_at": "2026-09-20T10:40:40.388467+00:00",
+  "description": "Exact PDB retrieval from held-out rendered images; cached feature rerun, not retraining.",
+  "elapsed_seconds": 12.042392510003992,
+  "environment": {
+    "gpu": "NVIDIA RTX A6000",
+    "python": "3.11.16",
+    "torch": "2.11.0+cu128"
+  },
+  "methodology": {
+    "limitation": "Test-only gallery, smaller than the live 836,399-image index. Synthetic rendered queries; not an estimate of accuracy on paper figures or of homology.",
+    "scoring": "Cosine similarity; mean of the five strongest reference views per PDB. Also records max-view scoring for comparison.",
+    "selection": "Existing checkpoints and scoring rule fixed before this rerun; no test-set tuning.",
+    "silhouette_normalisation": "Mean and standard deviation fitted on gallery images only, separately per protocol; colour weight 10 as in original baseline.",
+    "split": "Existing sequence-component test split (40% sequence identity clustering).",
+    "tie_policy": "Descending score, then alphabetical PDB ID; no optimistic tied ranks.",
+    "zero_vectors": "Handcrafted zero vectors remain zero and receive deterministic tied rankings; learned zero vectors are rejected."
+  },
+  "methods": [
+    {
+      "family": "handcrafted",
+      "id": "colour",
+      "label": "Colour histogram",
+      "protocols": {
+        "style_matched": {
+          "max": {
+            "MRR": 0.013087926116438785,
+            "R@1": 0.004834654805646877,
+            "R@10": 0.022819570682653258,
+            "R@20": 0.03771030748404564,
+            "R@5": 0.015470895378070006,
+            "median_rank": 1370.0
+          },
+          "top5": {
+            "MRR": 0.005757978970851561,
+            "R@1": 0.0015470895378070005,
+            "R@10": 0.010829626764649004,
+            "R@20": 0.016244440146973505,
+            "R@5": 0.0050280409978727516,
+            "median_rank": 1520.0
+          }
+        },
+        "view0_query": {
+          "max": {
+            "MRR": 0.006801986236484359,
+            "R@1": 0.002126014688828759,
+            "R@10": 0.010823347506764593,
+            "R@20": 0.018361035948975646,
+            "R@5": 0.006378044066486278,
+            "median_rank": 1519.0
+          },
+          "top5": {
+            "MRR": 0.004333065934009479,
+            "R@1": 0.0007730962504831851,
+            "R@10": 0.007730962504831852,
+            "R@20": 0.013142636258214147,
+            "R@5": 0.003865481252415926,
+            "median_rank": 1656.5
+          }
+        }
+      }
+    },
+    {
+      "family": "handcrafted",
+      "id": "silhouette",
+      "label": "Silhouette",
+      "protocols": {
+        "style_matched": {
+          "max": {
+            "MRR": 0.013888051101935878,
+            "R@1": 0.004834654805646877,
+            "R@10": 0.024946818797137886,
+            "R@20": 0.04196480371301489,
+            "R@5": 0.014697350609166505,
+            "median_rank": 908.0
+          },
+          "top5": {
+            "MRR": 0.013348290088453443,
+            "R@1": 0.0034809514600657515,
+            "R@10": 0.026880680719396637,
+            "R@20": 0.043511893250821894,
+            "R@5": 0.01527750918584413,
+            "median_rank": 874.0
+          }
+        },
+        "view0_query": {
+          "max": {
+            "MRR": 0.02272439064014364,
+            "R@1": 0.009470429068419018,
+            "R@10": 0.04116737533822961,
+            "R@20": 0.06532663316582915,
+            "R@5": 0.025705450328565905,
+            "median_rank": 611.0
+          },
+          "top5": {
+            "MRR": 0.020869973866152858,
+            "R@1": 0.008117510630073444,
+            "R@10": 0.03691534596057209,
+            "R@20": 0.06300734441437959,
+            "R@5": 0.02299961345187476,
+            "median_rank": 556.0
+          }
+        }
+      }
+    },
+    {
+      "family": "handcrafted",
+      "id": "hog",
+      "label": "Edges (HOG)",
+      "protocols": {
+        "style_matched": {
+          "max": {
+            "MRR": 0.019774316111193766,
+            "R@1": 0.010056081995745503,
+            "R@10": 0.03229549410172114,
+            "R@20": 0.04679945851866177,
+            "R@5": 0.022626184490427383,
+            "median_rank": 980.0
+          },
+          "top5": {
+            "MRR": 0.009567148798625136,
+            "R@1": 0.0021272481144846258,
+            "R@10": 0.018178302069232256,
+            "R@20": 0.030941790756140012,
+            "R@5": 0.010829626764649004,
+            "median_rank": 1099.0
+          }
+        },
+        "view0_query": {
+          "max": {
+            "MRR": 0.01855487060077249,
+            "R@1": 0.007730962504831852,
+            "R@10": 0.03247004252029378,
+            "R@20": 0.050831078469269424,
+            "R@5": 0.020873598763045998,
+            "median_rank": 892.0
+          },
+          "top5": {
+            "MRR": 0.010374711618175183,
+            "R@1": 0.0028991109393119445,
+            "R@10": 0.017394665635871664,
+            "R@20": 0.031310398144569,
+            "R@5": 0.010823347506764593,
+            "median_rank": 1015.0
+          }
+        }
+      }
+    },
+    {
+      "family": "handcrafted",
+      "id": "nuisance",
+      "label": "Shape + colour",
+      "protocols": {
+        "style_matched": {
+          "max": {
+            "MRR": 0.013795260728562877,
+            "R@1": 0.005221427190098627,
+            "R@10": 0.025333591181589635,
+            "R@20": 0.039064010829626766,
+            "R@5": 0.01411719203248888,
+            "median_rank": 997.0
+          },
+          "top5": {
+            "MRR": 0.010888707359408209,
+            "R@1": 0.003094179075614001,
+            "R@10": 0.02049893637594276,
+            "R@20": 0.03287565267839876,
+            "R@5": 0.011603171533552505,
+            "median_rank": 1039.0
+          }
+        },
+        "view0_query": {
+          "max": {
+            "MRR": 0.022863918405759503,
+            "R@1": 0.009663703131039814,
+            "R@10": 0.040587553150367224,
+            "R@20": 0.06571318129107073,
+            "R@5": 0.025318902203324313,
+            "median_rank": 621.5
+          },
+          "top5": {
+            "MRR": 0.022393356059635477,
+            "R@1": 0.008504058755315036,
+            "R@10": 0.04271356783919598,
+            "R@20": 0.06416698879010437,
+            "R@5": 0.026671820641669886,
+            "median_rank": 621.0
+          }
+        }
+      }
+    },
+    {
+      "family": "learned",
+      "id": "frozen",
+      "label": "DINOv2 \u00b7 frozen",
+      "protocols": {
+        "style_matched": {
+          "max": {
+            "MRR": 0.047092614228393816,
+            "R@1": 0.02359311545155676,
+            "R@10": 0.08702378650164379,
+            "R@20": 0.12840843163798105,
+            "R@5": 0.057435699091084896,
+            "median_rank": 354.0
+          },
+          "top5": {
+            "MRR": 0.05305755079301143,
+            "R@1": 0.02591374975826726,
+            "R@10": 0.09669309611293754,
+            "R@20": 0.13827112744150066,
+            "R@5": 0.06729839489460453,
+            "median_rank": 308.0
+          }
+        },
+        "view0_query": {
+          "max": {
+            "MRR": 0.05922306409960392,
+            "R@1": 0.030344027831465017,
+            "R@10": 0.11016621569385389,
+            "R@20": 0.1511403169694627,
+            "R@5": 0.0776961731735601,
+            "median_rank": 254.0
+          },
+          "top5": {
+            "MRR": 0.06998761222630835,
+            "R@1": 0.03440278314650174,
+            "R@10": 0.1349052957093158,
+            "R@20": 0.18090452261306533,
+            "R@5": 0.09489756474681098,
+            "median_rank": 228.5
+          }
+        }
+      }
+    },
+    {
+      "family": "learned",
+      "id": "head",
+      "label": "DINOv2 \u00b7 trained head",
+      "protocols": {
+        "style_matched": {
+          "max": {
+            "MRR": 0.17846782753410637,
+            "R@1": 0.09069812415393541,
+            "R@10": 0.3629858828079675,
+            "R@20": 0.4840456391413653,
+            "R@5": 0.25314252562367046,
+            "median_rank": 22.0
+          },
+          "top5": {
+            "MRR": 0.25817361817707113,
+            "R@1": 0.15548249854960355,
+            "R@10": 0.4755366466834268,
+            "R@20": 0.5936956101334365,
+            "R@5": 0.3587313865789983,
+            "median_rank": 12.0
+          }
+        },
+        "view0_query": {
+          "max": {
+            "MRR": 0.25731017312813903,
+            "R@1": 0.14746810977966757,
+            "R@10": 0.4893699265558562,
+            "R@20": 0.6120989563200618,
+            "R@5": 0.3641283339775802,
+            "median_rank": 11.0
+          },
+          "top5": {
+            "MRR": 0.36662704446439837,
+            "R@1": 0.24159257827599537,
+            "R@10": 0.6215693853884808,
+            "R@20": 0.7299961345187476,
+            "R@5": 0.5038654812524159,
+            "median_rank": 5.0
+          }
+        }
+      }
+    },
+    {
+      "family": "learned",
+      "id": "finetuned",
+      "label": "PhotoProt \u00b7 fine-tuned",
+      "protocols": {
+        "style_matched": {
+          "max": {
+            "MRR": 0.4903959724355468,
+            "R@1": 0.3548636627344808,
+            "R@10": 0.756913556372075,
+            "R@20": 0.8421968671436859,
+            "R@5": 0.6553858054534906,
+            "median_rank": 3.0
+          },
+          "top5": {
+            "MRR": 0.5784655798990943,
+            "R@1": 0.4532972345774512,
+            "R@10": 0.8147360278476117,
+            "R@20": 0.8812608779733127,
+            "R@5": 0.7304196480371301,
+            "median_rank": 2.0
+          }
+        },
+        "view0_query": {
+          "max": {
+            "MRR": 0.6095355011513983,
+            "R@1": 0.48685736374178584,
+            "R@10": 0.8409354464630846,
+            "R@20": 0.8958252802473908,
+            "R@5": 0.7576343254735215,
+            "median_rank": 2.0
+          },
+          "top5": {
+            "MRR": 0.6959380823295283,
+            "R@1": 0.5904522613065326,
+            "R@10": 0.8908001546192501,
+            "R@20": 0.9327406262079629,
+            "R@5": 0.8268264398917665,
+            "median_rank": 1.0
+          }
+        }
+      }
+    }
+  ],
+  "primary_protocol": "view0_query",
+  "primary_scoring": "top5",
+  "protocols": {
+    "style_matched": {
+      "candidate_pdbs": 3884,
+      "gallery_images": 72420,
+      "gallery_views": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "queries": 5171,
+      "query_views": [
+        15
+      ]
+    },
+    "view0_query": {
+      "candidate_pdbs": 3884,
+      "gallery_images": 77591,
+      "gallery_views": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "queries": 5174,
+      "query_views": [
+        0
+      ]
+    }
+  },
+  "source_sha256": {
+    "bench/82_web_baselines.py": "1d7ca44b30b8d605bd26fe6dfae16880a819e7532e0861cfa7d92f7435ca8bbd",
+    "data/emb/baselines_test.npz": "f3568f0dee3099ed0e873d6abb4f217bfec717c787b2d9e07cecf77a35a175c6",
+    "data/emb/dinov2l/shard_000.npz": "977bb26f7068f4f43d45c30e8eca4cc3330f7ad6244a4990e8ed0bf73f734bfd",
+    "data/emb/dinov2l/shard_001.npz": "41c171a6d90281ee1bbc1f4f75d024bdc91944aaa829b035ca710a28d8ad83cb",
+    "data/emb/dinov2l/shard_002.npz": "e3487330e289ce927f4f60b7cf4064a6707ab221bef7019b9903de44eee34a52",
+    "data/emb/dinov2l/shard_003.npz": "932b3fcd2ed5b1c6791067febb82613abb261925e4cbfe6167e2a986853f2d5e",
+    "data/emb/dinov2l/shard_004.npz": "27a7ef7d8e0a968d44abc0b516aec367e54bce094c6547cbff2a966d11a742e7",
+    "data/emb/dinov2l/shard_005.npz": "5d327b1d71de4ca2dbdef3f2ee75ca8a707f8ee27af9f7fdfa576699c4043e97",
+    "data/emb/dinov2l/shard_006.npz": "54d8c939a21d867c0b3f22db9a5dea9b48bc0cc8498a736dac0b0c18ef51d924",
+    "data/emb/dinov2l/shard_007.npz": "2675c84408d64e408ee0fa43efc6c97e74a843e62b5b1e949b0291ed2e96dd59",
+    "data/emb/dinov2l/shard_008.npz": "b916d8ad7928d83ebe803b3e20ecfc05248a42ea35771fbd24e21d25d29abb3b",
+    "data/emb/dinov2l/shard_009.npz": "e61a970bb6be8c2e93afad4f27018373d65c28ed5808888b3ec454c80e2773d0",
+    "data/emb/dinov2l/shard_010.npz": "1fc4eb85f54e0a600bf7ff5bd1f0404e8fe3d8bca898e7509068be9dc2c29302",
+    "data/emb/dinov2l/shard_011.npz": "b14559c55fd1b6dba34a1212008215ebb47f537ac594e3fdb15ce9a32f76916d",
+    "data/emb/dinov2l/shard_012.npz": "dd292d34aafd816d3c76b55ebff25cc99f089677fa40310527bb18196a009659",
+    "data/emb/dinov2l/shard_013.npz": "21c1f1783a0ec6a102cf528d845b85ce471270df13337d492a13c0de71a13166",
+    "data/emb/dinov2l/shard_014.npz": "7771bafa24cfae508f161ca34ef88fd90c3cd09db83403a615377c45476538cf",
+    "data/emb/dinov2l/shard_015.npz": "bda31d9bee38b6c8472980054431ddf31ff3a93594a9209840b8f7833a8f83ec",
+    "data/emb/dinov2l/shard_016.npz": "dc599129092fe9fbdf409fc01c0e484bbecc00d2c2e3fd289a6cbd54c1d76940",
+    "data/emb/dinov2l/shard_017.npz": "07f839ab45bea781c4ab844896888d6decd773c1a666b8873dee65217b82e291",
+    "data/emb/dinov2l/shard_018.npz": "f41288206ec68a995b340819f034a9d8b82c11becf0f033a223e1f47220adfdc",
+    "data/emb/dinov2l/shard_019.npz": "33a3dde3ee6f30f2110c6ad8b16db9f4f5c5df6278ba4e55d05399233c1159e7",
+    "data/emb/dinov2l/shard_020.npz": "7dc36eccf7c28ee481b973147f4ad6dceb9479b7b573a0557955ae9ec9d7eb59",
+    "data/emb/dinov2l/shard_021.npz": "7b6ea0a692140626b49f84551c447c1d77ad75ec5cd7ef519d8f1a5b8c0b8427",
+    "data/emb/dinov2l/shard_022.npz": "016ce8a3e838ccace55542f46067890dc78609df057bdbbd172397805c3e1793",
+    "data/emb/dinov2l/shard_023.npz": "4e9ecb3aec761fe6d1fa594f54f3eba32bcc850ebcbe3e48e86f43b873ff86ba",
+    "data/emb/dinov2l/shard_024.npz": "aacc183c2bb22d1616c5f538a5bb70c3409de1fe0881dce81fa0364dc5a80b2c",
+    "data/emb/dinov2l/shard_025.npz": "7aba83775d431737993f40995cf1d2845f5a120620d313a48114a1af799dd935",
+    "data/emb/dinov2l/shard_026.npz": "7cda589f59e588f8f7af2e1a45a150df347d371b20e61858e437385dff244033",
+    "data/emb/dinov2l/shard_027.npz": "e52f60a86e0cd21cd4275648aeb06a4bab8f1f063acf4391cf5d97ef1c5ebe96",
+    "data/emb/dinov2l/shard_028.npz": "03de8b45572f1ef53e186783b19444333c81511e46c826dae3bd8943ae530054",
+    "data/emb/dinov2l/shard_029.npz": "6f24950a98e5842228f674a8c03ec4ae8c8317e3a3fde9184859b23a8fa68d1b",
+    "data/emb/dinov2l/shard_030.npz": "5991e64d7f093fa76af5a452bfc469122acb9df5c07e5a38e951328a4b132e67",
+    "data/emb/dinov2l/shard_031.npz": "9d76dd65723bdc3afc09633eecbf8ac7d48cc319af7798782bc22e41a0509a1d",
+    "data/emb/dinov2l/shard_032.npz": "e0e039d17a557f27f9643964f36d0ccef081d571f0bbed35930515de6979f084",
+    "data/emb/dinov2l/shard_033.npz": "b737e01e9a37cfd6c728ebe83f17f87c47224655acb03a8ffb7e37999b6cd5dc",
+    "data/emb/dinov2l/shard_034.npz": "ddac08338f0636be4f62884c7a1aa9df0f2ee6c39a4207b191fc26679fa260e3",
+    "data/emb/dinov2l/shard_035.npz": "da84f45b3d410ffb52ef69c3f3621338497b1a060f31c5eaf4f96fd63132f60b",
+    "data/emb/dinov2l/shard_036.npz": "c6e2cfb261e4337cb321284ab0b831d1f23da26306350899b4768d298181fecc",
+    "data/emb/dinov2l/shard_037.npz": "bd1c51b8df158561da93ef6a5f0eef20686b668430a60745223a085451cef3ad",
+    "data/emb/dinov2l/shard_038.npz": "91daa70296b1c7c236cbd0ed4f1e9a4ed2ff6127440ed739c5b60b9a056116c5",
+    "data/emb/dinov2l/shard_039.npz": "0240f969733136ea79e9ad6752d8f3834e766e18d552620c214e8140f80291f8",
+    "data/emb/dinov2l/shard_040.npz": "47abe64b6a0c5508ffc270d566a2078b4727ae4b41da85d02e7c904ddd5e763e",
+    "data/emb/dinov2l/shard_041.npz": "c3a35f207265d53092c7aa3cbeca69e9c73f5c9b4612a251deaaa35ae0ce8023",
+    "data/emb/dinov2l/shard_042.npz": "224453309641a4e4db06e1761cc31f8ffc1d43cb89c86cffdb678db3ebc14d72",
+    "data/emb/dinov2l/shard_043.npz": "4dc692b03030572eae1030aca692a90ac4fc4c57ad8a0cfccc7d27007a7e314c",
+    "data/emb/dinov2l/shard_044.npz": "c103acc9372530d96b8c61569cd150a6adb578ca6e3a4f68ddea111f5e5b236a",
+    "data/emb/dinov2l/shard_045.npz": "002851ae1dd5357cff15b215de3a6d3d4277b2588e397a22d3158fac53cc9501",
+    "data/emb/dinov2l/shard_046.npz": "f3be97140a73556653dc5d158bd7ab8df93199d59c8e2401b24fe0aaaed69d70",
+    "data/emb/dinov2l/shard_047.npz": "d44eaedbc66e9fa988116153077fcf8463698e3bc2ffe4ac3f2c6cee524c895b",
+    "data/emb/dinov2l/shard_048.npz": "32fc86caf143e678deec582b2ec85e9eb67c782c89bd8e58c5f76773a47b6c40",
+    "data/emb/dinov2l/shard_049.npz": "1ece77a58e2c76f2edec562dc817f24ae61c9bb4b24db017c9d96f1883112d35",
+    "data/emb/dinov2l/shard_050.npz": "deb3be4f7aa07e7b7665945175a2ef7102edf285782893fe742003f9fe32dbac",
+    "data/emb/dinov2l/shard_051.npz": "de7cadc9fefc949970e3c4f8219aa545cacf996371aaba6ad45622f598320522",
+    "data/emb/dinov2l/shard_052.npz": "79ee6eac985d710a8398bec3979a9299cdad11962ce21468f4ff613e1a61c781",
+    "data/emb/dinov2l/shard_053.npz": "db6e02b15466a5f0309ef22c5f19a8bd83bdeeeaa5298327d1db3adf0af99a7e",
+    "data/emb/dinov2l/shard_054.npz": "d07637b71226272edc01ad4df70ad8e9ccadbf369fde93cc7273dc75c9079e55",
+    "data/emb/dinov2l/shard_055.npz": "9cdd9873e41be76b1ab2e6879f34b84f526e9d6d7bab455dc4f4848caac546b2",
+    "data/emb/dinov2l/shard_056.npz": "90d8a109a45a694e19815c63b772c0dc70bf35cd6056c7510daec9a8bbc88bda",
+    "data/emb/dinov2l/shard_057.npz": "849fc5ca1b743dd39345cb1ba3233310a3faebbf9dfcac1453d87ba636d40ac1",
+    "data/emb/dinov2l/shard_058.npz": "ac5821011c3072a8702f77fee51cb5b1127ae2dd23a71ee80af3245016002534",
+    "data/emb/dinov2l/shard_059.npz": "14cf49e28218576db4d88a9bfb74711fc31b31c3de522fabff5bdeec1a4d4eb7",
+    "data/emb/dinov2l/shard_060.npz": "ed66669d448589c9a1fdd2c3c0dcf09a665987e4e52f7c17f37ba3a045b38859",
+    "data/emb/dinov2l/shard_061.npz": "3bbe19c13b67f51073db3da71f9a5d691d6547d2c6fdda70c1822686fa7273a7",
+    "data/emb/dinov2l/shard_062.npz": "0bc3e8457923894e954455627d1fd62f06249a00a7fbb90c83a6c54ccfe4fbf0",
+    "data/emb/dinov2l/shard_063.npz": "31a06060f84afd65b619905bfe33071635b9c98af19679fafff5bcda8af05a64",
+    "data/emb/dinov2l/shard_064.npz": "7c06d29abb1def1957fc13f100a1cc4d6c44cb98f6f47a5bb128d0def87628af",
+    "data/emb/dinov2l/shard_065.npz": "03640654cb0dd807528f54af241d592afd0ff30176129fd951c3e667a62f8bde",
+    "data/emb/dinov2l/shard_066.npz": "6de3375883093d013db8ea938693bcdaff8f29d2ee9e23e1e1b4c2ef71782518",
+    "data/emb/dinov2l/shard_067.npz": "163b511127778a8ae9895c25d90e0f7f8df5109662d391cb48970fb08c371f4a",
+    "data/emb/dinov2l/shard_068.npz": "7db7b46fe2a2cf180872580493ba37ece36ed71bc573984c88a40685e70cc763",
+    "data/emb/dinov2l/shard_069.npz": "27327b6ea4d15dbc78a654b6442307a61aed5f8d79b5f858818e03211d9d0e19",
+    "data/emb/dinov2l/shard_070.npz": "a3121f1d3c014d4f14f19dc441f5571a4b34bea00e5a189711a81ce08a73d34d",
+    "data/emb/dinov2l/shard_071.npz": "3cf69144b31cb16b13614dfad5d0897c33482a4c52a9f8f0bc6e5f376ca1926e",
+    "data/emb/dinov2l/shard_072.npz": "cd39b96400deba32ccad7bb4e8b17b53c53953d8df60676409ab4e0ef9b6d55c",
+    "data/emb/dinov2l/shard_073.npz": "b3b14c918c01dd3a254b14f0bf6bc25f94c18505c92ae91a8d5dc6d2b7c9c5f2",
+    "data/emb/dinov2l/shard_074.npz": "eb4ac0a85bfc15e088120f20025a7600b0a21a37286715cff1fb0523e8a2ce4c",
+    "data/emb/dinov2l/shard_075.npz": "b29b1cfdba0a7632c5e05d1966fb335ce212800d9684fff1b577a0580021369d",
+    "data/emb/dinov2l/shard_076.npz": "5ab69bcebfecb2edeb9bd33b7af3c98d1d9ab6665b4c0bdc57aaecf7c044fd7a",
+    "data/emb/dinov2l/shard_077.npz": "0503e1169b409d70bec1d1964d07257970dbf3866072e0dd70ce6c1458eb1404",
+    "data/emb/dinov2l/shard_078.npz": "8375266dadb52385f61846ca6edef26c2f0bc8396c1bf62df627bbb7f4abd77c",
+    "data/emb/dinov2l/shard_079.npz": "376aef48b68daf235884971e1d6fd8a1a93a175db6eba95e5d288465ac0cbfa8",
+    "data/emb/dinov2l/shard_080.npz": "656754dbd0effa1c6187794eececc128119c647f0496db2b9727b383cca697fc",
+    "data/emb/dinov2l/shard_081.npz": "01cf7b90a6b9a0ef33931d9d8f332e7dffa291b0a25f23841d02276c71c9eb7b",
+    "data/emb/dinov2l/shard_082.npz": "a8af2fc2dee1e0b8655ce77d03c06bf28233333342d33117746e63f104603aa6",
+    "data/emb/dinov2l/shard_083.npz": "00cd4e787ce0a91bb5ec99ff3bab3c27105dd80b00e68ac9b3d57c8434946217",
+    "data/emb/dinov2l/shard_084.npz": "ca147371cafc4280b6c5ec99a97ccdf1951f7baad18571ac4494186b902bcfa2",
+    "data/emb/dinov2l/shard_085.npz": "99e125d5a55421dbf15fee8b5ebe241dc776cf7f85fa47d573eb51bc0a0ec01e",
+    "data/emb/dinov2l/shard_086.npz": "184cb282092fc44e7c7110567477b29a9936e676c6db0d5de43c323de1563117",
+    "data/emb/dinov2l/shard_087.npz": "bb7c796651b1eab893ef346c53c86aa05923f79bd6905ec59eac85c9e6c91d1e",
+    "data/emb/dinov2l/shard_088.npz": "bb4c1e378f53543bf484bf7d9b63af49ead441be98b6767b6795872112e06a67",
+    "data/emb/dinov2l/shard_089.npz": "b1337647d2fc18cd48e6052f530f4ecd04b3af832535512ece92708fa5168abd",
+    "data/emb/dinov2l/shard_090.npz": "b244a4e2e89b406bb88274c6579e6fdcfd1f36d3f27fdaf09b07164db86e9e66",
+    "data/emb/dinov2l/shard_091.npz": "e7cdb59c3915917c7be178a448d7676c1fec77ee3abd9887ab566a4f19d41a63",
+    "data/emb/dinov2l/shard_092.npz": "d5e6463fb344f683d625e4429c7390caaa12e8aa681f6460955e8def022c865f",
+    "data/emb/dinov2l/shard_093.npz": "af1b6f6bf2c1bb43f940504aebd4b32b0132bbd3d6dc2972c707e4796035e788",
+    "data/emb/dinov2l/shard_094.npz": "89d0af69d2dad103338d832d7c8d4dff8b3e7507cf2b4feb23fff6947f10dabb",
+    "data/emb/dinov2l/shard_095.npz": "b7d60d50a11ccec7a4c1815c8710d1db678389cbad95a8eeeea1254c64e292e1",
+    "data/emb/dinov2l_ftB/all.npz": "ea298969e9779460a07520117063dd63a1dda24f5e95626013cb02fa7b0e4ff8",
+    "data/emb/dinov2l_headA/all.npz": "33d3d9b80e9a05891ac6dc6a5a8eb9047e37f58c60e7a3bff163e1bdf4e2f313",
+    "data/meta/manifest.parquet": "f687cb3c1a7476212622d07f7ecef662d2dbc3405750d0381238ce1408a19312",
+    "data/meta/splits_component.parquet": "d82370c65b7e23b2ca0ac3a4417e650edc25819fc7a1d5a2b5e57a991a8e86cd"
+  },
+  "status": "complete"
+}

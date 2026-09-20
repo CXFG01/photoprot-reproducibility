@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.venv/
+.env
+.env.*
+downloads/
+data/
+reranked-*.json
+*.partial
+*.pt
+*.tar.gz
+*.zip
+cloudflare-token

@@ -1,0 +1,28 @@
+{
+  "passed": true,
+  "n_queries": 479,
+  "engine_checks": [
+    {
+      "crop_id": "001_erb1-beta-propeller__b",
+      "engine_top20_equal": true,
+      "max_score_error": 0.0
+    },
+    {
+      "crop_id": "194_polo-like-kinase-1-plk1-kinase-domain-with-dar__primary",
+      "engine_top20_equal": true,
+      "max_score_error": 0.0
+    },
+    {
+      "crop_id": "434_human-metapneumovirus-hmpv-prefusion-f-trimer-__primary",
+      "engine_top20_equal": true,
+      "max_score_error": 0.0
+    }
+  ],
+  "top20_independent_aggregation_checks": 9580,
+  "query_image_hashes_checked": true,
+  "index_hash_checked": true,
+  "checkpoint_unchanged": true,
+  "query_manifest_unchanged": true,
+  "query_embeddings_sha256": "627a4abac6d086f0eb681fed80d193e80226c62e9783a1b83c6f256c5603a88c",
+  "elapsed_seconds": 67.5982684000046
+}

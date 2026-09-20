@@ -1,0 +1,4 @@
+fastapi==0.141.1
+uvicorn==0.53.0
+# Uses the existing locked experiment environment for torch, transformers,
+# numpy, pandas, Pillow and httpx. One worker owns the GPU model and index.

@@ -1,0 +1,8 @@
+# Install CUDA torch separately as described in README.md.
+torch==2.11.0
+torchvision==0.26.0
+transformers==5.17.0
+numpy==2.4.6
+pillow==12.3.0
+safetensors==0.8.0
+huggingface_hub==1.32.0

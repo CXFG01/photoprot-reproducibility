@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "479_query_embeddings_valid": true,
+  "9580_ranked_rows_verified": true,
+  "all_6_metric_subsets_recomputed": true,
+  "report_assets_present": true,
+  "frozen_manifest_matches_approved_archive": true
+}

@@ -1,0 +1,16 @@
+[Unit]
+Description=PhotoProt named Cloudflare Tunnel
+After=network-online.target photoprot-api.service
+Wants=network-online.target photoprot-api.service
+
+[Service]
+Type=simple
+User=shadeform
+ExecStart=/home/shadeform/photoprot/webapp/bin/cloudflared tunnel --no-autoupdate run --token-file /home/shadeform/.cloudflared/photoprot-token
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

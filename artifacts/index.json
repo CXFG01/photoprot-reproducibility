@@ -1,0 +1,31 @@
+{
+  "checkpoint_sha256": "c3ea295708f3747c696520abcc848c2fbbdc7eed4c42c32dd657d11f61e60db4",
+  "manifest_sha256": "f687cb3c1a7476212622d07f7ecef662d2dbc3405750d0381238ce1408a19312",
+  "preprocessing": {
+    "size": [
+      224,
+      224
+    ],
+    "resize": "PIL bilinear (matches stage-B T.Resize)",
+    "center_crop": false,
+    "query_augmentation": false,
+    "mean": [
+      0.485,
+      0.456,
+      0.406
+    ],
+    "std": [
+      0.229,
+      0.224,
+      0.225
+    ]
+  },
+  "gallery": "all_manifest_rows_all_views",
+  "cache_chunk_rows": 8192,
+  "images": 836399,
+  "pdb_entries": 38833,
+  "objects": 52284,
+  "dimensions": 256,
+  "aggregation": "top5",
+  "index_sha256": "3fd09639ff615fbc3bd8e74f3d475f4923d197b46783f46eb863667a4c5b32cd"
+}

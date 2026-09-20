@@ -1,0 +1,44 @@
+{
+  "model": "DINOv2-L ft_b",
+  "checkpoint_sha256": "c3ea295708f3747c696520abcc848c2fbbdc7eed4c42c32dd657d11f61e60db4",
+  "index_sha256": "3fd09639ff615fbc3bd8e74f3d475f4923d197b46783f46eb863667a4c5b32cd",
+  "query_manifest_sha256": "322022be1b6d2bb8a3f62c9ed36d20f98c8e899137b675f5258ac779f28586c1",
+  "query_count": 479,
+  "n_gallery_images": 836399,
+  "n_gallery_entries": 38833,
+  "score": "exact cosine, mean of top five reference-image similarities per PDB",
+  "tie_policy": "descending score then alphabetical PDB ID",
+  "preprocessing": {
+    "size": [
+      224,
+      224
+    ],
+    "resize": "PIL bilinear (matches stage-B T.Resize)",
+    "center_crop": false,
+    "query_augmentation": false,
+    "mean": [
+      0.485,
+      0.456,
+      0.406
+    ],
+    "std": [
+      0.229,
+      0.224,
+      0.225
+    ]
+  },
+  "new_encoder_inference": true,
+  "training_performed": false,
+  "score_rule_tuned_on_this_set": false,
+  "script_sha256": "8659875200d4b222681e9d97d14bfd4f95cac4f8eeda03367dd194591e2e80fb",
+  "server_code_sha256": "9054b81797f65270c188733e31f2e5172fd183a8383402a43003a1f7112f3a98",
+  "aggregation_code_sha256": "33ac49fc1afbb4418851272c345ad2c7b1c2b085790ae2ff1b968d69abf68629",
+  "report_code_sha256": "9d56cbcd0a822c0df1b9e362096360ef72b1d783905a0bed2199ffee9dda56d6",
+  "splits_sha256": "d82370c65b7e23b2ca0ac3a4417e650edc25819fc7a1d5a2b5e57a991a8e86cd",
+  "python": "3.11.16",
+  "torch": "2.11.0+cu128",
+  "numpy": "2.4.6",
+  "gpu": "NVIDIA RTX A6000",
+  "created_at": "2026-09-20T11:13:36Z",
+  "scope": "All user-approved crops, including RNA-only diagnostic. Existing mapping certainty retained. Development diagnostic; embedded labels retained."
+}

@@ -1,0 +1,117 @@
+{
+  "version": "render_v1",
+  "note": "Render axis space for the PDB-wide corpus. Every weight here was set against a MEASURED cost multiplier (see cost_multipliers_measured), not against intuition: ambient occlusion and all three ray_trace_mode outline styles turned out free, while antialias and cartoon_transparency are the only expensive axes. Post-render degradation (JPEG, blur, crops, labels, paper backgrounds, figure panels) is deliberately NOT here - it belongs in the dataloader, where it is free and re-rolled every epoch instead of frozen 16 times per object.",
+
+  "image": {"width": 384, "height": 384},
+  "views": 16,
+
+  "canonical": {
+    "note": "View 0 is the frozen single-view evaluation render. Style is pinned so the headline benchmark is never confounded by style variation. Orientation is still random, because one arbitrary viewpoint is the deployment case.",
+    "cartoon_style": "automatic",
+    "ray_trace_mode": 0,
+    "color_scheme": "uniform",
+    "uniform_hue": 0.55,
+    "content": "cartoon_only",
+    "background": "white",
+    "ambient_occlusion": 0,
+    "antialias": 1,
+    "cartoon_transparency": 0.0,
+    "cylindrical_helices": 0,
+    "fancy_helices": 0,
+    "flat_sheets": 1,
+    "smooth_loops": 0,
+    "loop_radius": 0.2,
+    "orthoscopic": 0,
+    "field_of_view": 20,
+    "depth_cue": 0,
+    "fog_start": 0.45,
+    "light_count": 2,
+    "ambient": 0.14,
+    "direct": 0.45,
+    "reflect": 0.45,
+    "shininess": 55,
+    "zoom_buffer": 2.0,
+    "offcentre_x": 0.0,
+    "offcentre_y": 0.0
+  },
+
+  "axes": {
+    "cartoon_style":        {"type": "categorical", "values": ["automatic", "oval", "rect", "loop"], "p": [0.70, 0.10, 0.10, 0.10]},
+    "ray_trace_mode":       {"type": "categorical", "values": [0, 1], "p": [0.60, 0.40]},
+    "color_scheme":         {"type": "categorical", "values": ["uniform", "bychain", "rainbow", "chainbow", "sse", "mono", "bfactor"], "p": [0.25, 0.20, 0.15, 0.10, 0.15, 0.08, 0.07]},
+    "uniform_hue":          {"type": "uniform", "lo": 0.0, "hi": 1.0},
+    "content":              {"type": "categorical", "values": ["cartoon_only", "ligand_sticks", "ligand_spheres", "ions_spheres"], "p": [0.55, 0.25, 0.10, 0.10]},
+    "background":           {"type": "categorical", "values": ["white", "black", "grey80", "grey20", "gradient"], "p": [0.55, 0.12, 0.12, 0.08, 0.13]},
+    "ambient_occlusion":    {"type": "bernoulli", "p": 0.50},
+    "cylindrical_helices":  {"type": "bernoulli", "p": 0.25},
+    "fancy_helices":        {"type": "bernoulli", "p": 0.25},
+    "flat_sheets":          {"type": "bernoulli", "p": 0.70},
+    "smooth_loops":         {"type": "bernoulli", "p": 0.30},
+    "loop_radius":          {"type": "uniform", "lo": 0.15, "hi": 0.35},
+    "orthoscopic":          {"type": "bernoulli", "p": 0.40},
+    "field_of_view":        {"type": "uniform", "lo": 14.0, "hi": 35.0},
+    "depth_cue":            {"type": "bernoulli", "p": 0.35},
+    "fog_start":            {"type": "uniform", "lo": 0.30, "hi": 0.70},
+    "light_count":          {"type": "categorical", "values": [1, 2, 3], "p": [0.25, 0.50, 0.25]},
+    "ambient":              {"type": "uniform", "lo": 0.05, "hi": 0.35},
+    "direct":               {"type": "uniform", "lo": 0.20, "hi": 0.70},
+    "reflect":              {"type": "uniform", "lo": 0.20, "hi": 0.70},
+    "shininess":            {"type": "uniform", "lo": 20.0, "hi": 80.0},
+    "cartoon_transparency": {"type": "mixture_zero", "p_zero": 0.88, "lo": 0.10, "hi": 0.40},
+    "antialias":            {"type": "categorical", "values": [0, 1], "p": [0.50, 0.50]},
+    "zoom_buffer":          {"type": "uniform", "lo": 1.5, "hi": 3.0},
+    "offcentre_x":          {"type": "uniform", "lo": -0.10, "hi": 0.10},
+    "offcentre_y":          {"type": "uniform", "lo": -0.10, "hi": 0.10}
+  },
+
+  "heldout": {
+    "note": "Never emitted during training, so style generalisation stays measurable. If every axis is randomised you have spent the instrument to buy the fix and can no longer tell learned morphology from renderer recognition. Both of these are FREE to render, so reserving them costs nothing.",
+    "ray_trace_mode": [2, 3],
+    "combos": [{"cylindrical_helices": 1, "flat_sheets": 0}],
+    "repair": "A sampled combo matching a heldout combo is repaired deterministically by forcing flat_sheets=1, rather than resampled, so the sample stays a pure function of (object_id, view, seed)."
+  },
+
+  "filters": {
+    "note": "Applied PER OBJECT, not per entry. The first run deferred a whole entry when EITHER of its objects was too big, which threw away 191 perfectly renderable asymmetric units because their biological assembly was a capsid - 6q1f's AU is 238k atoms but its assembly is 14.3M. Assemblies get the larger cap because being bigger than the AU is the whole point of rendering them.",
+    "min_residues": 30,
+    "max_atoms_au": 15000,
+    "max_atoms_assembly": 50000,
+    "measured_effect": "Drops 8.8% of objects (57,354 -> 52,290) but removes 39.7% of render work, because the size tail is wildly superlinear in cost: the largest 15.6% of objects were ~54% of the first run's bill."
+  },
+
+  "degenerate": {
+    "note": "Combinations that produce an image with no readable structure. Repaired deterministically, like the heldout repair, so a sample stays a pure function of (object_id, view, seed). Found by inspecting the pilot contact sheets: 1EMA v7 (loop + outline) came out a near-black scribble, because the loop cartoon is thin enough that the outline pass swallows the fill entirely.",
+    "rules": [
+      {"when": {"cartoon_style": "loop", "ray_trace_mode": 1}, "set": {"ray_trace_mode": 0}}
+    ]
+  },
+
+  "cost_multipliers_measured": {
+    "note": "Mean over 3 structures (654 / 3,632 / larger residues), single-thread, 384px, ray traced, relative to an antialias=0 baseline. Measured on Modal 2026-09-19.",
+    "antialias=1": 2.76,
+    "cartoon_transparency=0.4": 2.37,
+    "cartoon_transparency=0.2": 2.28,
+    "cartoon_oval": 1.30,
+    "light_count=3": 1.23,
+    "fancy_helices=1": 1.08,
+    "ray_trace_mode=1": 1.08,
+    "ray_trace_mode=2": 1.07,
+    "ray_trace_mode=3": 1.06,
+    "color_bychain": 1.04,
+    "ligand_spheres": 1.04,
+    "chainbow": 1.03,
+    "depth_cue": 1.03,
+    "bg_gradient": 1.03,
+    "ligand_sticks": 1.02,
+    "loop_radius=0.35": 1.02,
+    "lighting_shifted": 1.00,
+    "flat_sheets=0": 1.00,
+    "smooth_loops=1": 0.97,
+    "ambient_occlusion=1": 0.93,
+    "cartoon_rect": 0.73,
+    "cylindrical_helices=1": 0.72,
+    "orthoscopic=1": 0.61,
+    "field_of_view=35": 0.58,
+    "caveat_orthoscopic_and_fov": "Those two were measured with the zoom applied BEFORE the projection change, so the structure occupied less of the frame and fewer pixels carried geometry. The apparent discount is partly a framing artifact. The renderer therefore re-zooms AFTER setting projection, and the discount should not be banked."
+  }
+}

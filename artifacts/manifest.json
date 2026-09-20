@@ -1,0 +1,38 @@
+[
+  {
+    "name": "stage_b_last.pt",
+    "bytes": 1636602793,
+    "sha256": "c3ea295708f3747c696520abcc848c2fbbdc7eed4c42c32dd657d11f61e60db4",
+    "url": "https://github.com/CXFG01/photoprot-reproducibility/releases/download/v0.1.0/stage_b_last.pt"
+  },
+  {
+    "name": "index.npz",
+    "bytes": 655737570,
+    "sha256": "3fd09639ff615fbc3bd8e74f3d475f4923d197b46783f46eb863667a4c5b32cd",
+    "url": "https://github.com/CXFG01/photoprot-reproducibility/releases/download/v0.1.0/index.npz"
+  },
+  {
+    "name": "manifest.parquet",
+    "bytes": 117557818,
+    "sha256": "f687cb3c1a7476212622d07f7ecef662d2dbc3405750d0381238ce1408a19312",
+    "url": "https://github.com/CXFG01/photoprot-reproducibility/releases/download/v0.1.0/manifest.parquet"
+  },
+  {
+    "name": "splits_component.parquet",
+    "bytes": 482046,
+    "sha256": "d82370c65b7e23b2ca0ac3a4417e650edc25819fc7a1d5a2b5e57a991a8e86cd",
+    "url": "https://github.com/CXFG01/photoprot-reproducibility/releases/download/v0.1.0/splits_component.parquet"
+  },
+  {
+    "name": "index.json",
+    "bytes": 750,
+    "sha256": "1f02b43040ee649e839c48b90424da3d837d10a2d1d7d695799be578cef834eb",
+    "url": "https://github.com/CXFG01/photoprot-reproducibility/releases/download/v0.1.0/index.json"
+  },
+  {
+    "name": "wild-v1-open-images.zip",
+    "bytes": 79609789,
+    "sha256": "3a75083634ddce7dfa4eb66d342646ad759ab95509fd9c32222529cea7add1d7",
+    "url": "https://github.com/CXFG01/photoprot-reproducibility/releases/download/v0.1.0/wild-v1-open-images.zip"
+  }
+]

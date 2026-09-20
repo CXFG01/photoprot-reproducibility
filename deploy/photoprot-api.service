@@ -1,0 +1,20 @@
+[Unit]
+Description=PhotoProt inference API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=shadeform
+WorkingDirectory=/home/shadeform/photoprot
+Environment=OMP_NUM_THREADS=4
+Environment=MKL_NUM_THREADS=4
+ExecStart=/home/shadeform/photoprot/.venv-pp/bin/python -m uvicorn webapp.server:app --host 127.0.0.1 --port 8000 --workers 1 --limit-concurrency 48 --timeout-keep-alive 10
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=45
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
