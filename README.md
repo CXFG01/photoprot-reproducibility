@@ -90,4 +90,14 @@ Query-cohort views are excluded from the reference images. Exact gallery counts,
 
 The release reproduces frozen inference and benchmark scoring. It does **not** claim a bit-for-bit training rerun: the full rendered training-image archive and a complete original training command/config snapshot are not bundled. Current training source includes later validation/augmentation changes and must not be treated as the exact recipe for the preserved `ft_b` checkpoint. See [model and training notes](docs/MODEL.md).
 
-Original PhotoProt code is MIT licensed. DINOv2-derived weights retain upstream Apache-2.0 terms. Individual paper figures retain their recorded licences; the MIT licence does not relicense third-party content.
+## Licence
+
+Original PhotoProt code is licensed under [Apache License 2.0](LICENSE). Preserve applicable copyright and attribution notices, including [NOTICE](NOTICE), when redistributing as required by the licence. DINOv2-derived weights retain upstream Apache-2.0 terms. Individual paper figures retain their recorded licences; this licence does not relicense third-party content. See [third-party notices](NOTICE.md).
+
+
+This licence applies from this revision onward. Earlier versions released under MIT remain available under their original terms. Apache 2.0 does not require a visible credit in every application interface.
+
+## Creators
+
+- **Nichita Mitrea** — [nichmitrea22@gmail.com](mailto:nichmitrea22@gmail.com)
+- **Ahura Farhadi** — [ahura.farhadi03@gmail.com](mailto:ahura.farhadi03@gmail.com)
