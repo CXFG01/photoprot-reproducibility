@@ -1,0 +1,19 @@
+{
+  "export": {
+    "status": 200,
+    "bytes": 3794
+  },
+  "structure": {
+    "status": 200,
+    "bytes": 752983
+  },
+  "entries?ids=3I3W": {
+    "status": 200,
+    "bytes": 201
+  },
+  "cross_site_blocked": 403,
+  "http": {
+    "status": 200,
+    "location": null
+  }
+}

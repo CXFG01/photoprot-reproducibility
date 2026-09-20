@@ -9,12 +9,33 @@ User=shadeform
 WorkingDirectory=/home/shadeform/photoprot
 Environment=OMP_NUM_THREADS=4
 Environment=MKL_NUM_THREADS=4
-ExecStart=/home/shadeform/photoprot/.venv-pp/bin/python -m uvicorn webapp.server:app --host 127.0.0.1 --port 8000 --workers 1 --limit-concurrency 48 --timeout-keep-alive 10
+Environment=HF_HUB_OFFLINE=1
+Environment=TRANSFORMERS_OFFLINE=1
+Environment=HF_HUB_DISABLE_TELEMETRY=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=PYTORCH_JIT=0
+EnvironmentFile=-/etc/photoprot.env
+ExecStart=/home/shadeform/photoprot/.venv-pp/bin/python -m uvicorn webapp.server:app --host 127.0.0.1 --port 8000 --workers 1 --limit-concurrency 32 --backlog 64 --timeout-keep-alive 5 --no-proxy-headers --no-server-header --h11-max-incomplete-event-size 16384
 Restart=on-failure
 RestartSec=5
 TimeoutStopSec=45
 NoNewPrivileges=true
 PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+InaccessiblePaths=-/home/shadeform/.ssh -/home/shadeform/.cloudflared -/home/shadeform/.cache/huggingface/token
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+UMask=0077
+MemoryHigh=6G
+MemoryMax=8G
+TasksMax=128
+CPUQuota=400%
+LimitNOFILE=4096
+LogRateLimitIntervalSec=30s
+LogRateLimitBurst=100
 
 [Install]
 WantedBy=multi-user.target

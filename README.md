@@ -2,6 +2,11 @@
 
 Search deposited protein structures using a single cartoon/ribbon image. This repository provides the frozen DINOv2-L retrieval checkpoint, the actual production index, rendering/training/evaluation source, and the real-world figure benchmark. The [Codex plugin](https://github.com/CXFG01/photoprot-codex) is distributed separately.
 
+The public demo is [photoprot.uk](https://photoprot.uk). Current deployment limits,
+emergency shutoff and security-review limitations are in the
+[operations guide](webapp/OPERATIONS.md). The `v0.1.0` release preserves the
+original reproduction snapshot; `main` also contains subsequent service hardening.
+
 ## Reproduce the reported numbers first
 
 Python 3.11+; no GPU or packages required for this check:

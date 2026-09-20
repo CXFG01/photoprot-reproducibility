@@ -1,0 +1,95 @@
+{
+  "application_rate_limit": [
+    {
+      "status": 400,
+      "detail": "{\"detail\":\"This image could not be read. Use a PNG, JPEG or WebP under 20 megapixels.\"}",
+      "retry_after": null
+    },
+    {
+      "status": 400,
+      "detail": "{\"detail\":\"This image could not be read. Use a PNG, JPEG or WebP under 20 megapixels.\"}",
+      "retry_after": null
+    },
+    {
+      "status": 400,
+      "detail": "{\"detail\":\"This image could not be read. Use a PNG, JPEG or WebP under 20 megapixels.\"}",
+      "retry_after": null
+    },
+    {
+      "status": 429,
+      "detail": "{\"detail\": \"Request limit reached. Please wait before trying again.\"}",
+      "retry_after": "5"
+    }
+  ],
+  "edge_probe": [
+    {
+      "status": 200,
+      "body_prefix": "{\"status\":\"ready\",\"images\":836399,\"pdb_entries\":38833,\"pending\":0}"
+    },
+    {
+      "status": 200,
+      "body_prefix": "{\"status\":\"ready\",\"images\":836399,\"pdb_entries\":38833,\"pending\":0}"
+    },
+    {
+      "status": 200,
+      "body_prefix": "{\"status\":\"ready\",\"images\":836399,\"pdb_entries\":38833,\"pending\":0}"
+    },
+    {
+      "status": 200,
+      "body_prefix": "{\"status\":\"ready\",\"images\":836399,\"pdb_entries\":38833,\"pending\":0}"
+    },
+    {
+      "status": 200,
+      "body_prefix": "{\"status\":\"ready\",\"images\":836399,\"pdb_entries\":38833,\"pending\":0}"
+    },
+    {
+      "status": 200,
+      "body_prefix": "{\"status\":\"ready\",\"images\":836399,\"pdb_entries\":38833,\"pending\":0}"
+    },
+    {
+      "status": 200,
+      "body_prefix": "{\"status\":\"ready\",\"images\":836399,\"pdb_entries\":38833,\"pending\":0}"
+    },
+    {
+      "status": 200,
+      "body_prefix": "{\"status\":\"ready\",\"images\":836399,\"pdb_entries\":38833,\"pending\":0}"
+    },
+    {
+      "status": 200,
+      "body_prefix": "{\"status\":\"ready\",\"images\":836399,\"pdb_entries\":38833,\"pending\":0}"
+    },
+    {
+      "status": 200,
+      "body_prefix": "{\"status\":\"ready\",\"images\":836399,\"pdb_entries\":38833,\"pending\":0}"
+    },
+    {
+      "status": 200,
+      "body_prefix": "{\"status\":\"ready\",\"images\":836399,\"pdb_entries\":38833,\"pending\":0}"
+    },
+    {
+      "status": 200,
+      "body_prefix": "{\"status\":\"ready\",\"images\":836399,\"pdb_entries\":38833,\"pending\":0}"
+    },
+    {
+      "status": 200,
+      "body_prefix": "{\"status\":\"ready\",\"images\":836399,\"pdb_entries\":38833,\"pending\":0}"
+    },
+    {
+      "status": 200,
+      "body_prefix": "{\"status\":\"ready\",\"images\":836399,\"pdb_entries\":38833,\"pending\":0}"
+    },
+    {
+      "status": 200,
+      "body_prefix": "{\"status\":\"ready\",\"images\":836399,\"pdb_entries\":38833,\"pending\":0}"
+    },
+    {
+      "status": 200,
+      "body_prefix": "{\"status\":\"ready\",\"images\":836399,\"pdb_entries\":38833,\"pending\":0}"
+    },
+    {
+      "status": 429,
+      "body_prefix": "error code: 1015\n"
+    }
+  ],
+  "edge_429_observed": true
+}

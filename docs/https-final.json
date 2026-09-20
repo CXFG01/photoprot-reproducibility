@@ -1,0 +1,22 @@
+{
+  "photoprot.uk": {
+    "http_status": 301,
+    "redirect": "https://photoprot.uk/",
+    "health": {
+      "status": "ready",
+      "images": 836399,
+      "pdb_entries": 38833,
+      "pending": 0
+    }
+  },
+  "api.photoprot.uk": {
+    "http_status": 301,
+    "redirect": "https://api.photoprot.uk/",
+    "health": {
+      "status": "ready",
+      "images": 836399,
+      "pdb_entries": 38833,
+      "pending": 0
+    }
+  }
+}

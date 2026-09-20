@@ -16,3 +16,10 @@ Keep the previous tunnel available until HTTPS health and image-search tests pas
 
 The stable hostname survives tunnel restarts. Availability still depends on the
 Brev instance remaining running and on its network/GPU capacity.
+
+Current units include resource limits, read-only filesystem views and offline
+model loading. The API requires `webapp/protection.py` and must keep
+`--no-proxy-headers` so only the actual localhost tunnel peer can provide the
+client identity. Read [the operations guide](../webapp/OPERATIONS.md) before
+changing worker counts, rate limits or security settings. The two legacy Python
+launchers now call these same system services instead of creating new processes.

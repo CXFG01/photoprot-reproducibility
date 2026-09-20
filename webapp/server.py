@@ -25,6 +25,7 @@ from transformers import AutoModel
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
+from webapp.protection import Protection
 
 ROOT = Path(os.environ.get('PHOTOPROT_ROOT', Path.home() / 'photoprot'))
 DATA = ROOT / 'data/service'
@@ -33,6 +34,8 @@ sys.path.insert(0, str(ROOT / 'bench'))
 from retrieval_scoring import aggregate, build_pad_index
 
 MAX_BYTES = 10 * 1024 * 1024
+UPLOAD_TIMEOUT = 15
+QUEUE_TIMEOUT = 10
 Image.MAX_IMAGE_PIXELS = 20_000_000
 LOG = logging.getLogger('photoprot')
 for extension, content_type in [('.webp','image/webp'),('.png','image/png'),('.jpg','image/jpeg'),('.js','text/javascript')]:
@@ -77,6 +80,9 @@ class Engine:
             for part in iter(lambda: f.read(8 * 1024 * 1024), b''): h.update(part)
         if h.hexdigest() != self.info['checkpoint_sha256']:
             raise RuntimeError('Checkpoint/index provenance mismatch')
+        with (DATA / 'index.npz').open('rb') as f:
+            if hashlib.file_digest(f,'sha256').hexdigest()!=self.info['index_sha256']:
+                raise RuntimeError('Retrieval index checksum mismatch')
         with np.load(DATA / 'index.npz', allow_pickle=False) as z:
             e = z['emb'].astype(np.float32); pdb = z['pdb_id']; ids = z['render_id']
         if len(ids) != self.info['images'] or len(set(ids)) != len(ids) or not np.isfinite(e).all():
@@ -90,7 +96,7 @@ class Engine:
         groups = torch.tensor([lookup[p] for p in pdb], device='cuda')
         self.pad, self.mask = build_pad_index(groups, len(self.pdbs), 'cuda')
         self.model = AutoModel.from_pretrained('facebook/dinov2-large', local_files_only=True)
-        state = torch.load(ROOT / 'data/ckpt/stage_b_last.pt', map_location='cpu', weights_only=False)
+        state = torch.load(ROOT / 'data/ckpt/stage_b_last.pt', map_location='cpu', weights_only=True)
         self.model.load_state_dict(state['model'], strict=True)
         self.head = Head(self.model.config.hidden_size, state['dim'])
         self.head.load_state_dict(state['head'], strict=True)
@@ -128,29 +134,22 @@ async def lifespan(app):
     app.state.engine = await asyncio.to_thread(Engine)
     app.state.gpu = asyncio.Lock()
     app.state.pending = 0
-    app.state.metadata = {}
+    app.state.metadata = OrderedDict()
+    app.state.metadata_tasks = {}
+    app.state.structures = OrderedDict()
+    app.state.structure_bytes = 0
+    app.state.structure_tasks = {}
+    app.state.allowed_pdbs = {p.upper() for p in app.state.engine.pdbs} | {'1UBQ'}
     app.state.exports = OrderedDict()
     app.state.remote_slots = asyncio.Semaphore(8)
-    app.state.client = httpx.AsyncClient(timeout=12, follow_redirects=False)
+    app.state.client = httpx.AsyncClient(timeout=12, follow_redirects=False,
+                                       limits=httpx.Limits(max_connections=8,max_keepalive_connections=8))
     yield
     await app.state.client.aclose()
 
 
 app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
-
-
-@app.middleware('http')
-async def headers(request, call_next):
-    if request.method == 'POST':
-        size = request.headers.get('content-length')
-        if size and (not size.isdigit() or int(size) > MAX_BYTES):
-            return Response('Image exceeds the 10 MB limit.', status_code=413)
-    response = await call_next(request)
-    response.headers['X-Content-Type-Options'] = 'nosniff'
-    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
-    response.headers['X-Frame-Options'] = 'DENY'
-    if request.url.path.startswith('/api/search'): response.headers['Cache-Control'] = 'no-store'
-    return response
+app.add_middleware(Protection)
 
 
 @app.get('/api/health')
@@ -165,9 +164,7 @@ def catalog():
     return {**examples, 'stats': {k:app.state.engine.info[k] for k in ['images','pdb_entries','objects','dimensions']}}
 
 
-async def metadata(pdb):
-    cache = app.state.metadata
-    if pdb in cache: return cache[pdb]
+async def fetch_metadata(pdb):
     result = {'pdb_id':pdb, 'title':f'PDB {pdb}', 'method':'', 'resolution':None, 'organisms':[]}
     try:
         async with app.state.remote_slots:
@@ -178,10 +175,33 @@ async def metadata(pdb):
                           resolution=(entry.get('rcsb_entry_info',{}).get('resolution_combined') or [None])[0],
                           organisms=sorted({s['ncbi_scientific_name'] for e in entry.get('polymer_entities') or []
                                             for s in e.get('rcsb_entity_source_organism') or [] if s.get('ncbi_scientific_name')}))
-            cache[pdb] = result
     except (httpx.HTTPError, KeyError, TypeError, ValueError):
         result['metadata_unavailable'] = True
     return result
+
+
+async def metadata(pdb):
+    cache=app.state.metadata
+    if pdb in cache:
+        expires,result=cache.pop(pdb)
+        if expires>time.monotonic():
+            cache[pdb]=(expires,result);return result
+    tasks=app.state.metadata_tasks
+    if pdb not in tasks:
+        if len(tasks)>=32:
+            return {'pdb_id':pdb,'title':f'PDB {pdb}','organisms':[],'metadata_unavailable':True}
+        async def fetch():
+            try:
+                try:
+                    async with asyncio.timeout(20):result=await fetch_metadata(pdb)
+                except TimeoutError:
+                    result={'pdb_id':pdb,'title':f'PDB {pdb}','organisms':[],'metadata_unavailable':True}
+                cache[pdb]=(time.monotonic()+(60 if result.get('metadata_unavailable') else 86400),result)
+                while len(cache)>2048:cache.popitem(last=False)
+                return result
+            finally:tasks.pop(pdb,None)
+        tasks[pdb]=asyncio.create_task(fetch())
+    return await asyncio.shield(tasks[pdb])
 
 
 @app.get('/api/entries')
@@ -189,6 +209,8 @@ async def entries(ids: str):
     pdbs = ids.upper().split(',')
     if len(pdbs) > 20 or any(not re.fullmatch(r'[A-Z0-9]{4}', p) for p in pdbs):
         raise HTTPException(400, 'Supply up to 20 valid PDB IDs.')
+    if any(p not in app.state.allowed_pdbs for p in pdbs):
+        raise HTTPException(404,'PDB is not in this collection.')
     return await asyncio.gather(*(metadata(p) for p in pdbs))
 
 
@@ -196,8 +218,30 @@ async def entries(ids: str):
 async def structure(pdb: str):
     pdb=pdb.upper()
     if not re.fullmatch(r'[A-Z0-9]{4}',pdb): raise HTTPException(400,'Invalid PDB ID.')
-    folder=DATA/'structures'; folder.mkdir(exist_ok=True); path=folder/f'{pdb}.cif'
-    if path.exists(): return FileResponse(path, media_type='chemical/x-cif')
+    if pdb not in app.state.allowed_pdbs:raise HTTPException(404,'PDB is not in this collection.')
+    cache=app.state.structures
+    if pdb in cache:
+        data=cache.pop(pdb);cache[pdb]=data
+    else:
+        tasks=app.state.structure_tasks
+        if pdb not in tasks:
+            if len(tasks)>=4:raise HTTPException(503,'Structure viewer is busy. Please try again shortly.')
+            async def fetch():
+                try:
+                    try:
+                        async with asyncio.timeout(20):data=await fetch_structure(pdb)
+                    except TimeoutError:raise HTTPException(504,'Structure download timed out.')
+                    while cache and app.state.structure_bytes+len(data)>64*1024*1024:
+                        _,old=cache.popitem(last=False);app.state.structure_bytes-=len(old)
+                    cache[pdb]=data;app.state.structure_bytes+=len(data)
+                    return data
+                finally:tasks.pop(pdb,None)
+            tasks[pdb]=asyncio.create_task(fetch())
+        data=await asyncio.shield(tasks[pdb])
+    return Response(data,media_type='chemical/x-cif',headers={'Cache-Control':'public, max-age=86400'})
+
+
+async def fetch_structure(pdb):
     try:
         async with app.state.remote_slots, app.state.client.stream('GET',f'https://files.rcsb.org/download/{pdb}.cif') as response:
             response.raise_for_status(); chunks=[]; size=0
@@ -206,33 +250,51 @@ async def structure(pdb: str):
                 if size > 12*1024*1024: raise HTTPException(413,'This structure is too large for the embedded viewer. Open it on RCSB.')
                 chunks.append(chunk)
         data=b''.join(chunks)
-        # Do not cache arbitrary unlimited public structures.
-        if pdb.lower() in app.state.engine.pdbs or pdb=='1UBQ':
-            path.write_bytes(data)
-        return Response(data,media_type='chemical/x-cif',headers={'Cache-Control':'public, max-age=86400'})
+        return data
     except httpx.HTTPError:
         raise HTTPException(502,'RCSB is unavailable. Please use the RCSB link.')
 
 
 @app.post('/api/search')
 async def search(request: Request):
-    if app.state.pending >= 6: raise HTTPException(429,'Search is busy. Please try again in a moment.')
+    if os.environ.get('PHOTOPROT_SEARCH_ENABLED','1')!='1':
+        raise HTTPException(503,'Search is temporarily paused.')
+    if app.state.pending >= 3: raise HTTPException(429,'Search is busy. Please try again in a moment.',headers={'Retry-After':'5'})
     app.state.pending += 1
     try:
         body=bytearray()
-        async for chunk in request.stream():
-            body.extend(chunk)
-            if len(body)>MAX_BYTES: raise HTTPException(413,'Please upload an image smaller than 10 MB.')
+        try:
+            async with asyncio.timeout(UPLOAD_TIMEOUT):
+                async for chunk in request.stream():
+                    if len(body)+len(chunk)>MAX_BYTES: raise HTTPException(413,'Please upload an image smaller than 10 MB.')
+                    body.extend(chunk)
+        except TimeoutError:raise HTTPException(408,'Upload timed out. Please try again.')
         if not body: raise HTTPException(400,'Please select an image first.')
-        async with app.state.gpu:
+        try:await asyncio.wait_for(app.state.gpu.acquire(),timeout=QUEUE_TIMEOUT)
+        except TimeoutError:raise HTTPException(503,'Search queue is busy. Please try again shortly.',headers={'Retry-After':'5'})
+        try:
             try:
-                result = await asyncio.to_thread(app.state.engine.search, bytes(body))
+                # Cancellation must not release the GPU lock while its thread is
+                # still running. Keep ownership until real work has finished.
+                work=asyncio.create_task(asyncio.to_thread(app.state.engine.search,bytes(body)))
+                try:result=await asyncio.shield(work)
+                except asyncio.CancelledError:
+                    while not work.done():
+                        try:await asyncio.shield(work)
+                        except asyncio.CancelledError:continue
+                        except Exception:break
+                    if work.done() and not work.cancelled():work.exception()
+                    raise
                 token = secrets.token_urlsafe(24)
+                now=time.monotonic()
+                while app.state.exports and next(iter(app.state.exports.values()))[0]<now-3600:
+                    app.state.exports.popitem(last=False)
                 app.state.exports[token] = (time.monotonic(), result['results'])
                 while len(app.state.exports) > 128: app.state.exports.popitem(last=False)
                 result['download_url'] = f'/api/export/{token}'
                 return result
             except ValueError as exc: raise HTTPException(400,str(exc))
+        finally:app.state.gpu.release()
     finally:
         app.state.pending -= 1
 
@@ -248,7 +310,7 @@ def export(token: str):
         text=str(value)
         return "'"+text if text.startswith(('=','+','-','@')) else text
     for row in item[1]:
-        meta=app.state.metadata.get(row['pdb_id'],{})
+        meta=app.state.metadata.get(row['pdb_id'],(0,{}))[1]
         writer.writerow([row['rank'],row['pdb_id'],row['score'],safe(meta.get('title','')),
                          safe('; '.join(meta.get('organisms',[]))),row['pdb_url']])
     return Response(out.getvalue(),media_type='text/csv',headers={
