@@ -94,8 +94,8 @@
   "webapp/server.py": "62a40c8d8305746d5cec0acfc50073160be65a628261b8ab9182f5d825e3adbe",
   "webapp/test_protection.py": "00cabfa42255a4f64f065b1c212acf04d0186b333667cbb6690c31b4ae73826e",
   "webapp/test_server_safety.py": "232e743d375333378e19ccb11466ecb24fdd6a61be2d560e26f89141031d8fff",
-  ".gitleaks.toml": "1e5c634a14262d6d2e64e5a660e5cb64ea35d3226010b8dde2cfc4a7cd964e2b",
-  "SECURITY.md": "8211215a22ba491bdb1ac4de42be43e75c4a6c3b514bab51742aad1042be90a4",
+  ".gitleaks.toml": "49de5f8864506f0d3cb0ffc9eb7a8d9e37ae22fe1ed3043712b44cc384aa9118",
+  "SECURITY.md": "0df68b38866d56b2c02bc64f6771232fcf94d8015b8de652015262106f03794d",
   ".github/workflows/secret-scan.yml": "0d809773aa7376a189c9090b7595d4d05abc2263907ff68a804e02157d38e819",
   ".github/FUNDING.yml": "f71c9cba216979d5c7a8c7a9a3251659046b1101d5e92737e6663cd61b25a85e"
 }
